@@ -138,8 +138,8 @@ function ScenarioCard({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-xl border p-4 text-left transition ${
-        active ? 'border-hero bg-hero/10 shadow-sm' : 'border-border bg-surface-card hover:border-hero/40'
+      className={`rounded-2xl p-4 text-left transition ${
+        active ? 'bg-surface-card shadow-sm ring-2 ring-hero/50' : 'bg-surface-card/60 hover:bg-surface-card'
       }`}
     >
       <span
@@ -163,7 +163,7 @@ function StackedBar({
   const total = segments.reduce((sum, s) => sum + s.value, 0)
   return (
     <div>
-      <div className="flex h-8 w-full overflow-hidden rounded-lg border border-border">
+      <div className="flex h-8 w-full overflow-hidden rounded-full">
         {segments
           .filter((s) => s.value > 0)
           .map((s) => (
@@ -197,7 +197,7 @@ function WithdrawalDetail({ scenario, amount, ordinaryRate }: { scenario: Withdr
   const delta = result.netAmount - baseline.netAmount
 
   return (
-    <div className="rounded-2xl border border-border bg-surface-card p-6">
+    <div className="rounded-3xl bg-surface-card p-6">
       <p className="text-sm text-text-secondary">
         Withdrawing <span className="font-semibold text-text-primary">{formatCurrency(amount)}</span> for{' '}
         <span className="font-semibold text-text-primary">{scenario.title.toLowerCase()}</span>:
@@ -214,7 +214,7 @@ function WithdrawalDetail({ scenario, amount, ordinaryRate }: { scenario: Withdr
       </div>
 
       <div
-        className="mt-6 flex items-center gap-3 rounded-xl border p-4"
+        className="mt-6 flex items-center gap-3 rounded-2xl border p-4"
         style={{
           borderColor: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)',
           background: delta >= 0 ? 'var(--status-good-bg)' : 'var(--status-critical-bg)',
@@ -261,7 +261,7 @@ function RothDetail({
   const delta = last.rothNet - last.traditionalNet
 
   return (
-    <div className="rounded-2xl border border-border bg-surface-card p-6">
+    <div className="rounded-3xl bg-surface-card p-6">
       <p className="text-sm text-text-secondary">
         Starting from a <span className="font-semibold text-text-primary">{formatCurrency(balanceAt18, { compact: true })}</span>{' '}
         balance at 18, converting to a Roth costs{' '}
@@ -329,7 +329,7 @@ function RothDetail({
       </div>
 
       <div
-        className="mt-6 flex items-center gap-3 rounded-xl border p-4"
+        className="mt-6 flex items-center gap-3 rounded-2xl border p-4"
         style={{
           borderColor: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)',
           background: delta >= 0 ? 'var(--status-good-bg)' : 'var(--status-critical-bg)',
@@ -398,7 +398,7 @@ export function ScenarioPlanner() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-        <div className="space-y-6 rounded-2xl border border-border bg-surface-card p-6">
+        <div className="space-y-6 rounded-3xl bg-surface-card p-6">
           {selected === 'roth' ? (
             <>
               <LabeledSlider

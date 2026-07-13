@@ -10,7 +10,6 @@
   --color-gridline: var(--gridline);
   --color-baseline: var(--baseline);
   --color-border: var(--border);
-  --color-navy: var(--masthead-navy);
   --color-hero: var(--series-hero);
   --color-context-1: var(--series-context-1);
   --color-context-2: var(--series-context-2);
@@ -19,94 +18,102 @@
   --color-good: var(--status-good);
   --color-critical: var(--status-critical);
   --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: Georgia, "Times New Roman", "Noto Serif", serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
 }
 
 :root {
-  /* Warm parchment ground + navy ink + gilded gold — the federal-document palette,
-     not the campaign-poster one: currency engraving rather than flag stripes. */
-  --surface-1: #f7f4ec;
-  --surface-2: #f0ebdd;
-  --surface-card: #fffdf8;
-  /* Fixed masthead navy — deliberately constant across both themes (see Hero/NavBar). */
-  --masthead-navy: #0b2545;
-  --text-primary: #0c1f38;
-  --text-secondary: #47536b;
-  --text-muted: #7c8296;
-  --gridline: #e2dcc8;
-  --baseline: #c9c0a4;
-  --border: rgba(11, 37, 69, 0.13);
+  /* Warm parchment + navy-charcoal ink + muted bronze-gold — an editorial,
+     understated palette (cream page, soft flat cards, one strong navy pill),
+     not a red/white/blue campaign one. */
+  --surface-1: #f1eee4;
+  --surface-2: #e9e5d8;
+  --surface-card: #ece8db;
+  --text-primary: #262b3c;
+  --text-secondary: #5b5f6e;
+  --text-muted: #8a8d99;
+  --gridline: #ddd7c4;
+  --baseline: #cdc6b0;
+  --border: rgba(38, 43, 60, 0.1);
 
-  --series-hero: #96721a;
-  --series-hero-fill: rgba(150, 114, 26, 0.16);
-  --series-context-1: #47536b;
-  --series-context-2: #9a94a0;
+  --cta-bg: #262b3c;
+  --cta-fg: #f5f1e6;
 
-  --accent-gold: #96721a;
-  --accent-gold-strong: #7a5c14;
+  --series-hero: #a17726;
+  --series-hero-fill: rgba(161, 119, 38, 0.16);
+  --series-context-1: #5b5f6e;
+  --series-context-2: #a4a08c;
+
+  --accent-gold: #a17726;
+  --accent-gold-soft: #d8c093;
   --accent-red: #a02142;
 
-  --status-good: #0d7a2e;
+  --status-good: #227a49;
   --status-critical: #a02142;
-  --status-good-bg: rgba(13, 122, 46, 0.08);
+  --status-good-bg: rgba(34, 122, 73, 0.09);
   --status-critical-bg: rgba(160, 33, 66, 0.08);
 
   color-scheme: light dark;
   font: 16px/1.5 var(--font-sans);
-  background: var(--surface-2);
+  background: var(--surface-1);
   color: var(--text-primary);
 }
 
 :root[data-theme="dark"] {
-  --surface-1: #0b1626;
-  --surface-2: #060f1c;
-  --surface-card: #10203a;
-  --text-primary: #f3ecd9;
-  --text-secondary: #b7c0d6;
-  --text-muted: #7c88a3;
-  --gridline: #1d2c47;
-  --baseline: #2d3d5c;
-  --border: rgba(243, 236, 217, 0.12);
+  --surface-1: #171a22;
+  --surface-2: #101319;
+  --surface-card: #1e2230;
+  --text-primary: #f0ead9;
+  --text-secondary: #bcc0cc;
+  --text-muted: #82869a;
+  --gridline: #2a2f40;
+  --baseline: #3a3f52;
+  --border: rgba(240, 234, 217, 0.1);
 
-  --series-hero: #cf9a30;
-  --series-hero-fill: rgba(207, 154, 48, 0.2);
-  --series-context-1: #b7c0d6;
-  --series-context-2: #7c88a3;
+  --cta-bg: #c1953c;
+  --cta-fg: #1a1d26;
 
-  --accent-gold: #cf9a30;
-  --accent-gold-strong: #e3b24b;
+  --series-hero: #c1953c;
+  --series-hero-fill: rgba(193, 149, 60, 0.2);
+  --series-context-1: #bcc0cc;
+  --series-context-2: #82869a;
+
+  --accent-gold: #c1953c;
+  --accent-gold-soft: #6b5a30;
   --accent-red: #d85878;
 
-  --status-good: #33b355;
+  --status-good: #3fa066;
   --status-critical: #d85878;
-  --status-good-bg: rgba(51, 179, 85, 0.14);
+  --status-good-bg: rgba(63, 160, 102, 0.16);
   --status-critical-bg: rgba(216, 88, 120, 0.14);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --surface-1: #0b1626;
-    --surface-2: #060f1c;
-    --surface-card: #10203a;
-    --text-primary: #f3ecd9;
-    --text-secondary: #b7c0d6;
-    --text-muted: #7c88a3;
-    --gridline: #1d2c47;
-    --baseline: #2d3d5c;
-    --border: rgba(243, 236, 217, 0.12);
+    --surface-1: #171a22;
+    --surface-2: #101319;
+    --surface-card: #1e2230;
+    --text-primary: #f0ead9;
+    --text-secondary: #bcc0cc;
+    --text-muted: #82869a;
+    --gridline: #2a2f40;
+    --baseline: #3a3f52;
+    --border: rgba(240, 234, 217, 0.1);
 
-    --series-hero: #cf9a30;
-    --series-hero-fill: rgba(207, 154, 48, 0.2);
-    --series-context-1: #b7c0d6;
-    --series-context-2: #7c88a3;
+    --cta-bg: #c1953c;
+    --cta-fg: #1a1d26;
 
-    --accent-gold: #cf9a30;
-    --accent-gold-strong: #e3b24b;
+    --series-hero: #c1953c;
+    --series-hero-fill: rgba(193, 149, 60, 0.2);
+    --series-context-1: #bcc0cc;
+    --series-context-2: #82869a;
+
+    --accent-gold: #c1953c;
+    --accent-gold-soft: #6b5a30;
     --accent-red: #d85878;
 
-    --status-good: #33b355;
+    --status-good: #3fa066;
     --status-critical: #d85878;
-    --status-good-bg: rgba(51, 179, 85, 0.14);
+    --status-good-bg: rgba(63, 160, 102, 0.16);
     --status-critical-bg: rgba(216, 88, 120, 0.14);
   }
 }
@@ -124,7 +131,7 @@ html {
 }
 
 section[id] {
-  scroll-margin-top: 96px;
+  scroll-margin-top: 92px;
 }
 
 .tabular-nums {

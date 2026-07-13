@@ -25,9 +25,12 @@ const END_AGE_PRESETS = [
 
 function StatTile({ label, value, sublabel }: { label: string; value: string; sublabel?: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface-card p-5">
+    <div className="rounded-3xl bg-surface-card p-6">
       <p className="text-xs font-medium uppercase tracking-wide text-text-muted">{label}</p>
-      <p className="tabular-nums mt-1 text-2xl font-semibold text-text-primary">{value}</p>
+      <p className="tabular-nums font-display mt-2 flex items-center gap-2 text-3xl text-text-primary">
+        <span className="h-6 w-px bg-gold" aria-hidden="true" />
+        {value}
+      </p>
       {sublabel && <p className="mt-1 text-xs text-text-secondary">{sublabel}</p>}
     </div>
   )
@@ -45,7 +48,7 @@ function CustomTooltip({ active, payload, label }: any) {
     row.value = point ? point.value : 0
   }
   return (
-    <div className="rounded-xl border border-border bg-surface-card px-4 py-3 text-sm shadow-lg">
+    <div className="rounded-2xl bg-surface-card px-4 py-3 text-sm shadow-lg">
       <p className="mb-2 font-medium text-text-primary">Age {label}</p>
       {rows.map((row) => (
         <div key={row.key} className="flex items-center justify-between gap-4 py-0.5">
@@ -78,7 +81,7 @@ export function CompoundingCalculator() {
       description="Adjust contributions and assumptions to see how a Trump Account stacks up against a taxable brokerage account or a plain savings account for the same child."
     >
       <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-        <div className="space-y-6 rounded-2xl border border-border bg-surface-card p-6">
+        <div className="space-y-6 rounded-3xl bg-surface-card p-6">
           <div>
             <label className="flex items-center justify-between text-sm font-medium text-text-primary">
               Annual family contribution
@@ -115,17 +118,18 @@ export function CompoundingCalculator() {
 
           <div>
             <p className="text-sm font-medium text-text-primary">Expected annual return</p>
-            <div className="mt-2 flex flex-col gap-2">
+            <div className="mt-2 flex flex-col gap-1 rounded-full bg-surface-2 p-1">
               {RETURN_PRESETS.map((preset) => (
                 <button
                   key={preset.value}
                   type="button"
                   onClick={() => update({ annualReturnRate: preset.value })}
-                  className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
+                  className="rounded-full px-4 py-2 text-left text-sm font-medium transition"
+                  style={
                     inputs.annualReturnRate === preset.value
-                      ? 'border-hero bg-hero/10 text-hero font-medium'
-                      : 'border-border text-text-secondary hover:border-hero/40'
-                  }`}
+                      ? { background: 'var(--cta-bg)', color: 'var(--cta-fg)' }
+                      : { color: 'var(--text-secondary)' }
+                  }
                 >
                   {preset.label}
                 </button>
@@ -135,17 +139,18 @@ export function CompoundingCalculator() {
 
           <div>
             <p className="text-sm font-medium text-text-primary">Project through</p>
-            <div className="mt-2 flex gap-2">
+            <div className="mt-2 flex gap-1 rounded-full bg-surface-2 p-1">
               {END_AGE_PRESETS.map((preset) => (
                 <button
                   key={preset.value}
                   type="button"
                   onClick={() => setEndAge(preset.value)}
-                  className={`flex-1 rounded-lg border px-3 py-2 text-sm transition ${
+                  className="flex-1 rounded-full px-3 py-2 text-sm font-medium transition"
+                  style={
                     endAge === preset.value
-                      ? 'border-hero bg-hero/10 text-hero font-medium'
-                      : 'border-border text-text-secondary hover:border-hero/40'
-                  }`}
+                      ? { background: 'var(--cta-bg)', color: 'var(--cta-fg)' }
+                      : { color: 'var(--text-secondary)' }
+                  }
                 >
                   {preset.label}
                 </button>
@@ -180,7 +185,7 @@ export function CompoundingCalculator() {
             />
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface-card p-4 sm:p-6">
+          <div className="rounded-3xl bg-surface-card p-4 sm:p-6">
             <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
               <span className="flex items-center gap-2 font-medium text-text-primary">
                 <span className="h-2.5 w-2.5 rounded-full" style={{ background: 'var(--series-hero)' }} />
