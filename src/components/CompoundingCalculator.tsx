@@ -91,7 +91,7 @@ export function CompoundingCalculator() {
               step={100}
               value={inputs.annualContribution}
               onChange={(e) => update({ annualContribution: Number(e.target.value) })}
-              className="mt-2 w-full accent-[#1c5cab]"
+              className="mt-2 w-full accent-[var(--series-hero)]"
             />
             <p className="mt-1 text-xs text-text-muted">Family/individual cap is $5,000/year.</p>
           </div>
@@ -108,7 +108,7 @@ export function CompoundingCalculator() {
               step={100}
               value={inputs.employerContribution}
               onChange={(e) => update({ employerContribution: Number(e.target.value) })}
-              className="mt-2 w-full accent-[#1c5cab]"
+              className="mt-2 w-full accent-[var(--series-hero)]"
             />
             <p className="mt-1 text-xs text-text-muted">Employer cap is $2,500/year.</p>
           </div>

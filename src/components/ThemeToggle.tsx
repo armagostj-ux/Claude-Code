@@ -20,7 +20,8 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
-      className="rounded-full border border-border px-3 py-1.5 text-sm text-text-secondary transition hover:text-text-primary"
+      className="rounded-full border px-3 py-1.5 text-sm transition hover:border-[rgba(243,236,217,0.6)] hover:text-[#f3ecd9]"
+      style={{ borderColor: 'rgba(243,236,217,0.3)', color: 'rgba(243,236,217,0.75)' }}
       aria-label="Toggle dark mode"
     >
       {theme === 'light' ? 'Dark mode' : 'Light mode'}

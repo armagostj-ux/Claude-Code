@@ -112,7 +112,7 @@ function LabeledSlider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-2 w-full accent-[#1c5cab]"
+        className="mt-2 w-full accent-[var(--series-hero)]"
       />
     </label>
   )
@@ -217,7 +217,7 @@ function WithdrawalDetail({ scenario, amount, ordinaryRate }: { scenario: Withdr
         className="mt-6 flex items-center gap-3 rounded-xl border p-4"
         style={{
           borderColor: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)',
-          background: delta >= 0 ? 'rgba(12, 163, 12, 0.08)' : 'rgba(208, 59, 59, 0.08)',
+          background: delta >= 0 ? 'var(--status-good-bg)' : 'var(--status-critical-bg)',
         }}
       >
         <span
@@ -332,7 +332,7 @@ function RothDetail({
         className="mt-6 flex items-center gap-3 rounded-xl border p-4"
         style={{
           borderColor: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)',
-          background: delta >= 0 ? 'rgba(12, 163, 12, 0.08)' : 'rgba(208, 59, 59, 0.08)',
+          background: delta >= 0 ? 'var(--status-good-bg)' : 'var(--status-critical-bg)',
         }}
       >
         <span

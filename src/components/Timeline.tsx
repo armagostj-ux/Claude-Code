@@ -12,7 +12,10 @@ export function Timeline() {
       <ol className="relative space-y-10 border-l border-border pl-8">
         {timeline.map((event) => (
           <li key={event.title} className="relative">
-            <span className="absolute -left-[41px] top-0 flex h-6 w-6 items-center justify-center rounded-full bg-hero text-[11px] font-semibold text-white ring-4 ring-surface-2">
+            <span
+              className="absolute -left-[41px] top-0 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ring-4 ring-surface-2"
+              style={{ background: 'var(--masthead-navy)', color: 'var(--accent-gold)' }}
+            >
               {timeline.indexOf(event) + 1}
             </span>
             <p className="text-xs font-semibold uppercase tracking-wide text-hero">{event.age}</p>

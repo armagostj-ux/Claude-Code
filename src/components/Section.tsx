@@ -18,9 +18,13 @@ export function Section({ id, eyebrow, title, description, children, tone = 'def
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto mb-12 max-w-2xl text-center">
           {eyebrow && (
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-hero">{eyebrow}</p>
+            <p className="mb-3 flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide text-hero">
+              <span aria-hidden="true">★</span>
+              {eyebrow}
+              <span aria-hidden="true">★</span>
+            </p>
           )}
-          <h2 className="text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">{title}</h2>
+          <h2 className="font-display text-3xl tracking-tight text-text-primary [text-wrap:balance] sm:text-4xl">{title}</h2>
           {description && <p className="mt-4 text-base text-text-secondary sm:text-lg">{description}</p>}
         </div>
         {children}
