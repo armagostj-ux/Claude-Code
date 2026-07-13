@@ -194,6 +194,37 @@ export function projectTraditionalHold(
   return { grossAtRetirement, taxOwed, netAtRetirement: grossAtRetirement - taxOwed }
 }
 
+export interface RothPathPoint {
+  age: number
+  traditionalNet: number
+  rothNet: number
+}
+
+/**
+ * Year-by-year comparison of "stay traditional" vs. "convert to Roth at 18," expressed as
+ * spendable (after-tax) value at each age — traditional's eventual tax is applied at every
+ * point for comparability, which is an illustrative simplification (real tax is only owed on
+ * actual withdrawal).
+ */
+export function projectRothVsTraditionalPath(
+  balance: number,
+  conversionTaxRate: number,
+  retirementTaxRate: number,
+  annualReturnRate: number,
+  years: number,
+): RothPathPoint[] {
+  const points: RothPathPoint[] = []
+  let traditionalGross = balance
+  let roth = balance * (1 - conversionTaxRate)
+  points.push({ age: 18, traditionalNet: traditionalGross * (1 - retirementTaxRate), rothNet: roth })
+  for (let i = 1; i <= years; i++) {
+    traditionalGross *= 1 + annualReturnRate
+    roth *= 1 + annualReturnRate
+    points.push({ age: 18 + i, traditionalNet: traditionalGross * (1 - retirementTaxRate), rothNet: roth })
+  }
+  return points
+}
+
 export function formatCurrency(value: number, opts: { compact?: boolean } = {}): string {
   if (opts.compact) {
     return new Intl.NumberFormat('en-US', {
