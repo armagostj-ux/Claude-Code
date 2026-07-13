@@ -24,63 +24,54 @@ import {
 
 const balanceAt18 = projectGrowth(DEFAULT_INPUTS, 18)[18].trumpAccount
 
-type WithdrawalKey = 'standard' | 'home' | 'education' | 'business' | 'wait'
-type ScenarioKey = WithdrawalKey | 'roth'
+type Path = 'withdraw' | 'invest'
+type ReasonKey = 'standard' | 'home' | 'education' | 'business' | 'wait'
 
-interface WithdrawalScenario {
-  key: WithdrawalKey
-  title: string
+interface Reason {
+  key: ReasonKey
+  label: string
   blurb: string
   penalized: boolean
   compute: (amount: number, tax: TaxContext) => ScenarioResult
 }
 
-const WITHDRAWAL_SCENARIOS: WithdrawalScenario[] = [
+const REASONS: Reason[] = [
   {
     key: 'standard',
-    title: 'Early withdrawal, no exception',
-    blurb: 'The default outcome before 59½ if nothing else applies.',
+    label: 'No exception',
+    blurb: 'The default before 59½ if none of the exceptions below apply: ordinary income tax plus a 10% penalty.',
     penalized: true,
     compute: (amount, tax) => scenarioStandardEarlyWithdrawal(amount, tax),
   },
   {
     key: 'home',
-    title: 'First-time home purchase',
-    blurb: 'Penalty-free on up to $10,000.',
+    label: 'First-time home',
+    blurb: 'Penalty-free on up to $10,000 toward a first home purchase.',
     penalized: false,
     compute: (amount, tax) => scenarioExceptionWithdrawal(amount, tax, 'a first home', 10000),
   },
   {
     key: 'education',
-    title: 'Higher education',
-    blurb: 'Tuition, books, and other qualified costs.',
+    label: 'Education',
+    blurb: 'Penalty-free for qualified higher-education expenses — tuition, books, and similar costs.',
     penalized: false,
     compute: (amount, tax) => scenarioExceptionWithdrawal(amount, tax, 'higher education'),
   },
   {
     key: 'business',
-    title: 'Start a small business',
-    blurb: 'Launch or invest in a small business.',
+    label: 'Small business',
+    blurb: 'Penalty-free to launch or invest in a small business.',
     penalized: false,
     compute: (amount, tax) => scenarioExceptionWithdrawal(amount, tax, 'a small business'),
   },
   {
     key: 'wait',
-    title: 'Wait until 59½',
-    blurb: 'No exception needed once the penalty window passes.',
+    label: 'After 59½',
+    blurb: "No exception needed — the 10% penalty only ever applied before 59½, so it's simply gone.",
     penalized: false,
     compute: (amount, tax) => scenarioQualifiedWithdrawal(amount, tax),
   },
 ]
-
-const CARD_META: Record<ScenarioKey, { tag: string }> = {
-  standard: { tag: 'Penalty applies' },
-  home: { tag: 'No penalty' },
-  education: { tag: 'No penalty' },
-  business: { tag: 'No penalty' },
-  wait: { tag: 'No penalty' },
-  roth: { tag: 'Long-term play' },
-}
 
 function LabeledSlider({
   label,
@@ -118,127 +109,121 @@ function LabeledSlider({
   )
 }
 
-function ScenarioCard({
-  title,
-  blurb,
-  tag,
-  tone,
-  active,
-  onClick,
+function PillGroup<T extends string>({
+  options,
+  value,
+  onChange,
 }: {
-  title: string
-  blurb: string
-  tag: string
-  tone: 'good' | 'critical' | 'accent'
-  active: boolean
-  onClick: () => void
+  options: { key: T; label: string }[]
+  value: T
+  onChange: (key: T) => void
 }) {
-  const toneColor = tone === 'good' ? 'var(--status-good)' : tone === 'critical' ? 'var(--status-critical)' : 'var(--series-hero)'
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-2xl p-4 text-left transition ${
-        active ? 'bg-surface-card shadow-sm ring-2 ring-hero/50' : 'bg-surface-card/60 hover:bg-surface-card'
-      }`}
-    >
-      <span
-        className="inline-flex items-center gap-1.5 text-xs font-semibold"
-        style={{ color: toneColor }}
-      >
-        <span className="h-1.5 w-1.5 rounded-full" style={{ background: toneColor }} />
-        {tag}
-      </span>
-      <p className="mt-2 text-sm font-semibold text-text-primary">{title}</p>
-      <p className="mt-1 text-xs leading-relaxed text-text-secondary">{blurb}</p>
-    </button>
-  )
-}
-
-function StackedBar({
-  segments,
-}: {
-  segments: { label: string; value: number; color: string }[]
-}) {
-  const total = segments.reduce((sum, s) => sum + s.value, 0)
-  return (
-    <div>
-      <div className="flex h-8 w-full overflow-hidden rounded-full">
-        {segments
-          .filter((s) => s.value > 0)
-          .map((s) => (
-            <div
-              key={s.label}
-              style={{ width: `${(s.value / total) * 100}%`, background: s.color }}
-              title={`${s.label}: ${formatCurrency(s.value)}`}
-            />
-          ))}
-      </div>
-      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
-        {segments.map((s) => (
-          <span key={s.label} className="flex items-center gap-1.5 text-text-secondary">
-            <span className="h-2 w-2 rounded-full" style={{ background: s.color }} />
-            {s.label}: <span className="tabular-nums font-medium text-text-primary">{formatCurrency(s.value)}</span>
-          </span>
-        ))}
-      </div>
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => (
+        <button
+          key={opt.key}
+          type="button"
+          onClick={() => onChange(opt.key)}
+          className="rounded-full px-4 py-2 text-sm font-medium transition"
+          style={
+            value === opt.key
+              ? { background: 'var(--cta-bg)', color: 'var(--cta-fg)' }
+              : { background: 'var(--surface-2)', color: 'var(--text-secondary)' }
+          }
+        >
+          {opt.label}
+        </button>
+      ))}
     </div>
   )
 }
 
-function WithdrawalDetail({ scenario, amount, ordinaryRate }: { scenario: WithdrawalScenario; amount: number; ordinaryRate: number }) {
-  const tax: TaxContext = { ordinaryRate }
-  const result = useMemo(() => scenario.compute(amount, tax), [scenario, amount, ordinaryRate])
+function StackedBar({ segments }: { segments: { label: string; value: number; color: string }[] }) {
+  const total = segments.reduce((sum, s) => sum + s.value, 0)
+  return (
+    <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-2">
+      {segments
+        .filter((s) => s.value > 0)
+        .map((s) => (
+          <div
+            key={s.label}
+            style={{ width: `${(s.value / total) * 100}%`, background: s.color }}
+            title={`${s.label}: ${formatCurrency(s.value)}`}
+          />
+        ))}
+    </div>
+  )
+}
 
-  const baselineScenario = scenario.key === 'standard'
-    ? WITHDRAWAL_SCENARIOS.find((s) => s.key === 'wait')!
-    : WITHDRAWAL_SCENARIOS.find((s) => s.key === 'standard')!
-  const baseline = useMemo(() => baselineScenario.compute(amount, tax), [baselineScenario, amount, ordinaryRate])
+function WithdrawPanel({ amount, ordinaryRate }: { amount: number; ordinaryRate: number }) {
+  const [reasonKey, setReasonKey] = useState<ReasonKey>('home')
+  const reason = REASONS.find((r) => r.key === reasonKey)!
+  const tax: TaxContext = { ordinaryRate }
+
+  const result = useMemo(() => reason.compute(amount, tax), [reason, amount, ordinaryRate])
+  const baselineReason = reasonKey === 'standard' ? REASONS.find((r) => r.key === 'wait')! : REASONS.find((r) => r.key === 'standard')!
+  const baseline = useMemo(() => baselineReason.compute(amount, tax), [baselineReason, amount, ordinaryRate])
   const delta = result.netAmount - baseline.netAmount
 
   return (
-    <div className="rounded-3xl bg-surface-card p-6">
-      <p className="text-sm text-text-secondary">
-        Withdrawing <span className="font-semibold text-text-primary">{formatCurrency(amount)}</span> for{' '}
-        <span className="font-semibold text-text-primary">{scenario.title.toLowerCase()}</span>:
-      </p>
-
-      <div className="mt-5">
-        <StackedBar
-          segments={[
-            { label: 'Kept', value: result.netAmount, color: scenario.penalized ? 'var(--series-context-1)' : 'var(--status-good)' },
-            { label: 'Ordinary tax', value: result.taxOwed, color: 'var(--series-context-2)' },
-            { label: '10% penalty', value: result.penaltyOwed, color: 'var(--status-critical)' },
-          ]}
-        />
+    <div className="space-y-6">
+      <div>
+        <p className="mb-2 text-sm font-medium text-text-primary">Why are you withdrawing?</p>
+        <PillGroup options={REASONS.map((r) => ({ key: r.key, label: r.label }))} value={reasonKey} onChange={setReasonKey} />
+        <p className="mt-3 text-sm leading-relaxed text-text-secondary">{reason.blurb}</p>
       </div>
 
-      <div
-        className="mt-6 flex items-center gap-3 rounded-2xl border p-4"
-        style={{
-          borderColor: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)',
-          background: delta >= 0 ? 'var(--status-good-bg)' : 'var(--status-critical-bg)',
-        }}
-      >
-        <span
-          className="tabular-nums text-lg font-semibold"
-          style={{ color: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)' }}
+      <div className="rounded-3xl bg-surface-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
+          Withdrawing {formatCurrency(amount)} · {reason.label.toLowerCase()}
+        </p>
+        <p className="font-display mt-2 text-4xl text-text-primary">{formatCurrency(result.netAmount)}</p>
+        <p className="mt-1 text-sm text-text-secondary">
+          you keep — {formatCurrency(result.taxOwed)} to income tax
+          {result.penaltyOwed > 0 && <> and {formatCurrency(result.penaltyOwed)} to the 10% penalty</>}.
+        </p>
+
+        <div className="mt-4">
+          <StackedBar
+            segments={[
+              { label: 'Kept', value: result.netAmount, color: reason.penalized ? 'var(--series-context-1)' : 'var(--status-good)' },
+              { label: 'Income tax', value: result.taxOwed, color: 'var(--series-context-2)' },
+              { label: '10% penalty', value: result.penaltyOwed, color: 'var(--status-critical)' },
+            ]}
+          />
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-text-secondary">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ background: reason.penalized ? 'var(--series-context-1)' : 'var(--status-good)' }} /> Kept
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ background: 'var(--series-context-2)' }} /> Income tax
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ background: 'var(--status-critical)' }} /> 10% penalty
+            </span>
+          </div>
+        </div>
+
+        <div
+          className="mt-5 rounded-2xl p-4 text-sm"
+          style={{ background: delta >= 0 ? 'var(--status-good-bg)' : 'var(--status-critical-bg)' }}
         >
-          {delta >= 0 ? '+' : ''}{formatCurrency(delta)}
-        </span>
-        <span className="text-sm text-text-secondary">
-          {delta >= 0
-            ? `more kept than "${baselineScenario.title}" — the default if this exception didn't apply.`
-            : `less than "${baselineScenario.title}" would keep. This is the cost of withdrawing without qualifying for an exception.`}
-        </span>
+          <span className="font-semibold" style={{ color: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)' }}>
+            {delta >= 0 ? '+' : ''}{formatCurrency(delta)}
+          </span>{' '}
+          <span className="text-text-secondary">
+            {delta >= 0
+              ? `compared to withdrawing with "${baselineReason.label}" instead.`
+              : `less than "${baselineReason.label}" would have kept — the cost of withdrawing without an exception.`}
+          </span>
+        </div>
       </div>
-
-      <p className="mt-4 text-sm leading-relaxed text-text-secondary">{result.notes}</p>
     </div>
   )
 }
 
-function RothDetail({
+function InvestPanel({
   conversionRate,
   retirementRate,
   returnRate,
@@ -258,19 +243,35 @@ function RothDetail({
     [conversionRate, returnRate, years],
   )
   const last = path[path.length - 1]
-  const delta = last.rothNet - last.traditionalNet
+  const rothWins = last.rothNet >= last.traditionalNet
+  const delta = Math.abs(last.rothNet - last.traditionalNet)
 
   return (
     <div className="rounded-3xl bg-surface-card p-6">
-      <p className="text-sm text-text-secondary">
-        Starting from a <span className="font-semibold text-text-primary">{formatCurrency(balanceAt18, { compact: true })}</span>{' '}
-        balance at 18, converting to a Roth costs{' '}
-        <span className="font-semibold text-text-primary">{formatCurrency(conversion.taxOwedNow, { compact: true })}</span> in tax
-        today — then grows completely tax-free.
+      <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
+        Spendable value at age {last.age}, starting from {formatCurrency(balanceAt18, { compact: true })} at 18
       </p>
 
-      <div className="mt-4">
-        <ResponsiveContainer width="100%" height={260}>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl p-4" style={{ background: !rothWins ? 'var(--status-good-bg)' : 'var(--surface-2)' }}>
+          <p className="text-sm text-text-secondary">Stay traditional</p>
+          <p className="font-display mt-1 text-2xl text-text-primary">{formatCurrency(last.traditionalNet, { compact: true })}</p>
+          {!rothWins && <p className="mt-1 text-xs font-semibold" style={{ color: 'var(--status-good)' }}>Wins by {formatCurrency(delta, { compact: true })}</p>}
+        </div>
+        <div className="rounded-2xl p-4" style={{ background: rothWins ? 'var(--status-good-bg)' : 'var(--surface-2)' }}>
+          <p className="text-sm text-text-secondary">Convert to Roth at 18</p>
+          <p className="font-display mt-1 text-2xl text-text-primary">{formatCurrency(last.rothNet, { compact: true })}</p>
+          {rothWins && <p className="mt-1 text-xs font-semibold" style={{ color: 'var(--status-good)' }}>Wins by {formatCurrency(delta, { compact: true })}</p>}
+        </div>
+      </div>
+
+      <p className="mt-4 text-sm leading-relaxed text-text-secondary">
+        Converting costs {formatCurrency(conversion.taxOwedNow, { compact: true })} in tax today — often while the child
+        is in a low bracket — in exchange for tax-free growth for the next {years} years.
+      </p>
+
+      <div className="mt-5">
+        <ResponsiveContainer width="100%" height={220}>
           <LineChart data={path} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
             <CartesianGrid vertical={false} stroke="var(--gridline)" />
             <XAxis
@@ -301,7 +302,7 @@ function RothDetail({
             <Line
               type="monotone"
               dataKey="traditionalNet"
-              name="Stay traditional (after eventual tax)"
+              name="Stay traditional"
               stroke="var(--series-context-1)"
               strokeWidth={2}
               dot={false}
@@ -310,7 +311,7 @@ function RothDetail({
             <Line
               type="monotone"
               dataKey="rothNet"
-              name="Convert to Roth (tax-free)"
+              name="Convert to Roth"
               stroke="var(--series-hero)"
               strokeWidth={2.5}
               dot={false}
@@ -328,36 +329,16 @@ function RothDetail({
         </div>
       </div>
 
-      <div
-        className="mt-6 flex items-center gap-3 rounded-2xl border p-4"
-        style={{
-          borderColor: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)',
-          background: delta >= 0 ? 'var(--status-good-bg)' : 'var(--status-critical-bg)',
-        }}
-      >
-        <span
-          className="tabular-nums text-lg font-semibold"
-          style={{ color: delta >= 0 ? 'var(--status-good)' : 'var(--status-critical)' }}
-        >
-          {delta >= 0 ? '+' : ''}{formatCurrency(delta, { compact: true })}
-        </span>
-        <span className="text-sm text-text-secondary">
-          {delta >= 0
-            ? `more spendable value at age ${last.age} by converting now instead of staying traditional.`
-            : `less spendable value at age ${last.age} — at these tax rates, staying traditional wins out.`}
-        </span>
-      </div>
-
       <p className="mt-4 text-xs leading-relaxed text-text-muted">
-        Illustrative: the "stay traditional" line applies the retirement tax rate at every point for
-        comparability, though tax is only actually owed when money is withdrawn.
+        Illustrative: the "stay traditional" figure applies the retirement tax rate throughout for
+        comparability, though tax is only actually owed when the money is withdrawn.
       </p>
     </div>
   )
 }
 
 export function ScenarioPlanner() {
-  const [selected, setSelected] = useState<ScenarioKey>('home')
+  const [path, setPath] = useState<Path>('withdraw')
   const [amount, setAmount] = useState(10000)
   const [ordinaryRate, setOrdinaryRate] = useState(0.22)
   const [conversionRate, setConversionRate] = useState(0.22)
@@ -365,41 +346,53 @@ export function ScenarioPlanner() {
   const [returnRate, setReturnRate] = useState(0.07)
   const [yearsToRetirement, setYearsToRetirement] = useState(47)
 
-  const selectedWithdrawal = WITHDRAWAL_SCENARIOS.find((s) => s.key === selected)
-
   return (
     <Section
       id="plan-ahead"
       eyebrow="Plan ahead"
-      title="Click a scenario to see how it plays out"
-      description="Once the account becomes a traditional IRA at 18, the family faces real choices. Pick one below to see a worked example."
+      title="What happens when the money becomes available?"
+      description="At 18 the account becomes a traditional IRA. From there, the family has two basic choices — pull money out, or leave it invested. Pick one to see the numbers."
       tone="muted"
     >
-      <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {WITHDRAWAL_SCENARIOS.map((s) => (
-          <ScenarioCard
-            key={s.key}
-            title={s.title}
-            blurb={s.blurb}
-            tag={CARD_META[s.key].tag}
-            tone={s.penalized ? 'critical' : 'good'}
-            active={selected === s.key}
-            onClick={() => setSelected(s.key)}
-          />
-        ))}
-        <ScenarioCard
-          title="Convert to a Roth IRA at 18"
-          blurb="Pay tax now, grow and withdraw tax-free forever after."
-          tag={CARD_META.roth.tag}
-          tone="accent"
-          active={selected === 'roth'}
-          onClick={() => setSelected('roth')}
+      <div className="mb-8 flex justify-center">
+        <PillGroup
+          options={[
+            { key: 'withdraw', label: 'Withdraw money' },
+            { key: 'invest', label: 'Leave it invested' },
+          ]}
+          value={path}
+          onChange={setPath}
         />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         <div className="space-y-6 rounded-3xl bg-surface-card p-6">
-          {selected === 'roth' ? (
+          {path === 'withdraw' ? (
+            <>
+              <LabeledSlider
+                label="Withdrawal amount"
+                value={amount}
+                onChange={setAmount}
+                min={1000}
+                max={30000}
+                step={500}
+                format={(v) => formatCurrency(v)}
+              />
+              <LabeledSlider
+                label="Ordinary income tax rate"
+                value={ordinaryRate}
+                onChange={setOrdinaryRate}
+                min={0.1}
+                max={0.37}
+                step={0.01}
+                format={(v) => `${Math.round(v * 100)}%`}
+              />
+              <p className="border-t border-border pt-4 text-xs leading-relaxed text-text-muted">
+                Before 59½, a withdrawal owes ordinary income tax plus a 10% penalty — unless it
+                qualifies for an exception.
+              </p>
+            </>
+          ) : (
             <>
               <LabeledSlider
                 label="Tax rate if converted now (age 18)"
@@ -437,40 +430,18 @@ export function ScenarioPlanner() {
                 step={0.005}
                 format={(v) => `${(v * 100).toFixed(1)}%`}
               />
-            </>
-          ) : (
-            <>
-              <LabeledSlider
-                label="Withdrawal amount"
-                value={amount}
-                onChange={setAmount}
-                min={1000}
-                max={30000}
-                step={500}
-                format={(v) => formatCurrency(v)}
-              />
-              <LabeledSlider
-                label="Ordinary income tax rate"
-                value={ordinaryRate}
-                onChange={setOrdinaryRate}
-                min={0.1}
-                max={0.37}
-                step={0.01}
-                format={(v) => `${Math.round(v * 100)}%`}
-              />
+              <p className="border-t border-border pt-4 text-xs leading-relaxed text-text-muted">
+                A Roth conversion means paying tax on the balance today in exchange for tax-free
+                growth and tax-free withdrawals later.
+              </p>
             </>
           )}
-          <p className="border-t border-border pt-4 text-xs leading-relaxed text-text-muted">
-            {selected === 'roth'
-              ? 'A Roth conversion means paying ordinary income tax on the balance today — often while the child is in a low tax bracket — in exchange for tax-free growth later.'
-              : 'Once the account becomes a traditional IRA at 18, a withdrawal before 59½ owes ordinary income tax plus a 10% penalty — unless it qualifies for an IRA exception.'}
-          </p>
         </div>
 
-        {selected === 'roth' || !selectedWithdrawal ? (
-          <RothDetail conversionRate={conversionRate} retirementRate={retirementRate} returnRate={returnRate} years={yearsToRetirement} />
+        {path === 'withdraw' ? (
+          <WithdrawPanel amount={amount} ordinaryRate={ordinaryRate} />
         ) : (
-          <WithdrawalDetail scenario={selectedWithdrawal} amount={amount} ordinaryRate={ordinaryRate} />
+          <InvestPanel conversionRate={conversionRate} retirementRate={retirementRate} returnRate={returnRate} years={yearsToRetirement} />
         )}
       </div>
     </Section>
