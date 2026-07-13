@@ -18,7 +18,7 @@ export function BenefitsGrid() {
     <Section
       id="benefits"
       eyebrow="Why they matter"
-      title="Six reasons Trump Accounts are worth a client conversation"
+      title="Six reasons you should consider opening a Trump Account"
       description="Each feature compounds with the others — free seed money invested for free, with no annual tax drag, for up to 18 years before anyone touches it."
       tone="muted"
     >
