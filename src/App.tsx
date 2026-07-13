@@ -13,10 +13,10 @@ function App() {
       <NavBar />
       <main>
         <Hero />
+        <Timeline />
         <BenefitsGrid />
         <CompoundingCalculator />
         <ScenarioPlanner />
-        <Timeline />
         <FAQ />
       </main>
       <Footer />
